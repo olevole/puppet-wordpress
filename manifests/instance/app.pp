@@ -48,7 +48,7 @@ define wordpress::instance::app (
     mode   => '0644',
   }
   Exec {
-    path      => ['/bin','/sbin','/usr/bin','/usr/sbin'],
+    path      => ['/bin','/sbin','/usr/bin','/usr/sbin', '/usr/local/bin', '/usr/local/sbin' ],
     cwd       => $install_dir,
     logoutput => 'on_failure',
   }
@@ -62,12 +62,16 @@ define wordpress::instance::app (
   } else {
     notice("Warning: cannot manage the permissions of ${install_dir}, as another resource (perhaps apache::vhost?) is managing it.")
   }
-  
-  ## tar.gz. file name lang-aware
-  if $wp_lang {
-    $install_file_name = "wordpress-${version}-${wp_lang}.tar.gz"
+
+  if $version != "latest" {
+    ## tar.gz. file name lang-aware
+    if $wp_lang {
+      $install_file_name = "wordpress-${version}-${wp_lang}.tar.gz"
+    } else {
+      $install_file_name = "wordpress-${version}.tar.gz"
+    }
   } else {
-    $install_file_name = "wordpress-${version}.tar.gz"
+      $install_file_name = "latest.tar.gz"
   }
 
   ## Download and extract
